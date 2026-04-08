@@ -68,14 +68,33 @@ router.post('/signin', async (req, res) => { // Use async/await
     res.status(500).json({ success: false, message: 'Something went wrong. Please try again later.' }); // 500 Internal Server Error
   }
 });
-
+/*
 router.route('/movies')
     .get(authJwtController.isAuthenticated, async (req, res) => {
         return res.status(500).json({ success: false, message: 'GET request not supported' });
     })
     .post(authJwtController.isAuthenticated, async (req, res) => {
         return res.status(500).json({ success: false, message: 'POST request not supported' });
+    }); */
+
+router.route('/movies')
+    .get(authJwtController.isAuthenticated, async (req, res) => {
+        const movies = await Movie.find({});
+        return res.status(200).json(movies);
+    })
+    .post(authJwtController.isAuthenticated, async (req, res) => {
+        const newMovie = new Movie({
+            title: req.body.title,
+            releaseDate: req.body.releaseDate,
+            genre: req.body.genre,
+            actors: req.body.actors
+        });
+        await newMovie.save();
+        return res.status(201).json(newMovie);
     });
+
+
+
 
 app.use('/', router);
 
